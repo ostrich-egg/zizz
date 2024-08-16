@@ -1,0 +1,23 @@
+{
+  "name": "zips",
+  "version": "1.0.0",
+  "description": "File compressor and decompressor",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start:build": "tsc -w",
+    "start:run": "nodemon build/index.js",
+    "start": "concurrently npm:start:*"
+  },
+  "keywords": [],
+  "bin": {
+    "zizz": "./build/index.js"
+  },
+  "author": "Sauhardha Kafle",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^22.3.0",
+    "@types/yargs": "^17.0.33",
+    "yargs": "^17.7.2"
+  }
+}
