@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { zip } from "./zip.js";
 import { file } from "./file.js";
+import { unzipFn } from "./unzip.js";
+
 
 const APP_COMMAND = 'zizz';
 
@@ -49,6 +50,11 @@ const f: file = new file(userDefinedPath);
 if (argv.hasOwnProperty('zip')) {
     zip(f);
 };
+
+if (argv.hasOwnProperty('unzip')) {
+    unzipFn(f);
+}
+
 
 
 
