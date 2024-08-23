@@ -48,7 +48,7 @@ const zip = async (f: file) => {
             writeStream.on('finish', resolve)
             writeStream.on('error', reject)
         });
-        writeStream.end()
+        writeStream.end();
     }
 };
 
