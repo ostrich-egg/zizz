@@ -1,7 +1,7 @@
-import { readdir, readFileSync, existsSync, mkdir, writeFile, fstat, statSync, mkdirSync } from "fs";
+import { readdir, readFileSync, existsSync, writeFile, statSync, mkdirSync } from "fs";
 import { file } from "./file.js";
 import { unzip } from "zlib";
-import { dirname, resolve, normalize } from "path";
+import { dirname, resolve, normalize, basename } from "path";
 import { promisify } from "util";
 import { Buffer } from "buffer";
 import { relative, join } from "path";
@@ -13,76 +13,75 @@ const unzipFn = async (f: file) => {
     let bufferPath: string = resolve(rootDir, archivedFile[0] as string);
     const compressedSourceData: Buffer = readFileSync(bufferPath);
 
-
     unzip(compressedSourceData, (err, data) => {
 
         if (err) {
-            console.error(new Error(`Error occured, ${err}`));
+            console.error(new Error(`Error occured while decompressing : , ${err}`));
         };
 
         const initial_path_of_file: string = (
             data.slice(2)).subarray(0, data.readUInt16BE() + 1
-            ).toString();
+            ).toString().replace(/\0/g, '');
 
-        console.log('initial_path_of_file :   ', initial_path_of_file);
         const basepath: string = resolve(dirname(initial_path_of_file), "..");
-        const destRootPath: string = normalize(join(basepath, "donhomah"));
-        console.log("base path", basepath);
+        const destRootPath: string = normalize(join(basepath, `${basename(dirname(initial_path_of_file))}_unzipped`));
 
-        while (data.length > 0) {
+        let offset: number = 0;
+
+        //While loop////
+        while (offset < data.length) {
 
             /**PATH : length*/
-            const length_of_path: number = data.readUInt16BE();
-            if (data.length < 2) break;
-            data = data.slice(2);
+            const length_of_path: number = data.readUInt16BE(offset);
+            if (offset + 2 > data.length) break;
+            offset += 2;
 
             /**PATH : data*/
-            const original_path_of_file: string = data.subarray(0, length_of_path + 1).toString('utf-8').replace(/\0/g, '');
-            if (data.length < length_of_path) break;
-            data = data.slice(length_of_path);
+            const original_path_of_file: string = data.slice(offset, offset + length_of_path).toString('utf-8').replace(/\0/g, '');
+            if (offset + length_of_path > data.length) break;
+            offset += length_of_path
 
+            /**PATH : manipulation */
             let relativePath: string = relative(basepath, original_path_of_file);
             let finalPath: string = join(destRootPath, relativePath);
-            console.log("Final Path", finalPath);
-
 
             /**DATA : length*/
-            const length_of_data: number = data.readUInt32BE();
-            if (data.length < 4) break;
-            data = data.slice(4);
-
+            const length_of_data: number = data.readUInt32BE(offset);
+            if (offset + 4 > data.length) break;
+            offset += 4;
 
             /**DATA : data */
-            const the_data_of_file: string = data.subarray(0, length_of_data).toString('utf-8');
-            if (data.length < length_of_data) break;
-            data = data.slice(length_of_data);
+            const the_data_of_file: string = data.slice(offset, offset + length_of_data).toString('utf-8');
+            if (offset + length_of_data > data.length) break;
+            offset += length_of_data;
 
+            try {
+                if (statSync(original_path_of_file).isDirectory()) {
+                    if (!existsSync(finalPath)) {
+                        mkdirSync(resolve(finalPath), { recursive: true }
+                        )
+                    };
+                    continue;
 
-            if (statSync(original_path_of_file).isDirectory()) {
-                if (!existsSync(finalPath)) {
-                    mkdir(resolve(finalPath), { recursive: true }, (err, path) => {
-                        console.log("Error while making the directory", err);
-                        if (path) console.log(`Directory made :- ${path}`);
-                    })
+                } else {
+                    if (!existsSync(finalPath)) {
+                        mkdirSync(dirname(finalPath), { recursive: true })
+                    };
                 };
-                continue;
 
-            } else {
-                if (!existsSync(finalPath)) {
-                    mkdir(dirname(finalPath), { recursive: true }, (err, path) => {
-                        console.log("Error while making the directory", err);
-                        if (path) console.log(`Directory made  :- ${path}`)
-                    })
-                };
-            };
-
-            writeFile(finalPath, the_data_of_file.toString(), (err) => {
-                if (err) console.log("Error on writing file", err)
-            })
+                writeFile(finalPath, the_data_of_file.toString(), (err) => {
+                    if (err) console.log("Error on writing file", err);
+                })
+            }
+            catch (error) {
+                console.log(`Error occured while operating on files ; `, error);
+            } 
         };
+
+        
+
     });
 };
-
 export { unzipFn };
 
 
