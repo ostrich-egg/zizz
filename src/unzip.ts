@@ -66,7 +66,7 @@ const unzipFn = async (f: file): Promise<void> => {
                     ifNotExistMakeDir(finalPath);
                     continue;
                 } else {
-                    ifNotExistMakeDir(dirname(finalPath));
+                    ifNotExistMakeDir(resolve(finalPath, ".."));
                 };
 
                 writeFile(finalPath, the_data_of_file.toString(), (err) => {
