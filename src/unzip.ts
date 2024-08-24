@@ -9,7 +9,7 @@ const readdirAsync = promisify(readdir);
 
 const ifNotExistMakeDir = (path: string): void => {
     if (!existsSync(path)) {
-        mkdirSync(resolve(path), { recursive: true }
+        mkdirSync(path, { recursive: true }
         );
     };
 };
@@ -63,11 +63,10 @@ const unzipFn = async (f: file): Promise<void> => {
 
             try {
                 if (statSync(original_path_of_file).isDirectory()) {
-                    ifNotExistMakeDir(finalPath)
+                    ifNotExistMakeDir(finalPath);
                     continue;
-
                 } else {
-                    ifNotExistMakeDir(finalPath)
+                    ifNotExistMakeDir(dirname(finalPath));
                 };
 
                 writeFile(finalPath, the_data_of_file.toString(), (err) => {
@@ -81,6 +80,8 @@ const unzipFn = async (f: file): Promise<void> => {
     });
 };
 export { unzipFn };
+
+
 
 
 

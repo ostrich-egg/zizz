@@ -31,31 +31,23 @@ const argv: any = yargs(hideBin(process.argv))
     .argv as Arguments
 
 
-
-console.log(argv)
-
-if (argv._[0] != APP_COMMAND) {
+let commandArray = ['zip', 'unzip', 'z', 'u'];
+let commandPresent = commandArray.some(key => key in argv);
+if (!commandPresent) {
     console.error(`
-        Missing : Application command did not match. Did you mean ${APP_COMMAND}? 
-        \n\tExample: ${APP_COMMAND} --zip/unzip "filepath".
-        \nProcess Terminated!
-        `);
+            Missing : Application command did not match. Did you mean "zip or unzip"? 
+            \n\tExample: ${APP_COMMAND} --zip/unzip "filepath".
+            \nProcess Terminated!
+            `);
     process.exit(1);
 };
 
-
 let userDefinedPath: string = argv.zip || argv.z || argv.u || argv.unzip;
-
 const f: file = new file(userDefinedPath);
 
-if (argv.hasOwnProperty('zip')) {
+if (argv.hasOwnProperty('zip') || argv.hasOwnProperty('z')) {
     zip(f);
 };
-
-if (argv.hasOwnProperty('unzip')) {
+if (argv.hasOwnProperty('unzip') || argv.hasOwnProperty('u')) {
     unzipFn(f);
 }
-
-
-
-

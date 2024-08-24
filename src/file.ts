@@ -50,7 +50,7 @@ class file {
         /////////////////////////////////////////////////////
         //TODO : MAKE USER BE ABLE TO GIVE THE NAME OF THE ZIPPED FOLDER
         /////////////////////////////////////////////////////
-        const folderRoot: string = resolve(root, `${basename(this.absPath)}(zipped)`);
+        const folderRoot: string = resolve(root, `${basename(this.absPath)}_zipped`);
         if (!existsSync(folderRoot)) mkdirSync(folderRoot, { recursive: true });
         fs.writeFile(resolve(folderRoot as string, ARCHIVED_FILE), "", (err) => {
             if (err) console.error(new Error(`Something went wrong while creating file. More Info : ${err}`));
