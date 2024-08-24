@@ -32,10 +32,7 @@ const zip = async (f: file) => {
             l_fileData_buffer.writeUInt32BE(fileData_buffer.length);
 
             const joinBuffer: Buffer = Buffer.concat([l_filePath_buffer, filePath_buffer, l_fileData_buffer, fileData_buffer]);
-
             gzipStream.write(joinBuffer);
-
-
         };
     } catch (error) {
         console.log(new Error(`Error occured while zipping.:: ${error}`));
@@ -43,7 +40,6 @@ const zip = async (f: file) => {
     finally {
 
         gzipStream.end();
-
         await new Promise((resolve, reject) => {
             writeStream.on('finish', resolve)
             writeStream.on('error', reject)

@@ -7,7 +7,15 @@ import { Buffer } from "buffer";
 import { relative, join } from "path";
 const readdirAsync = promisify(readdir);
 
-const unzipFn = async (f: file) => {
+
+const ifNotExistMakeDir = (path: string): void => {
+    if (!existsSync(path)) {
+        mkdirSync(resolve(path), { recursive: true }
+        )
+    };
+};
+
+const unzipFn = async (f: file): Promise<void> => {
     let rootDir: string = f.getAbsPath();
     const archivedFile = await readdirAsync(rootDir, { recursive: false });
     let bufferPath: string = resolve(rootDir, archivedFile[0] as string);
@@ -27,7 +35,6 @@ const unzipFn = async (f: file) => {
         const destRootPath: string = normalize(join(basepath, `${basename(dirname(initial_path_of_file))}_unzipped`));
 
         let offset: number = 0;
-
         //While loop////
         while (offset < data.length) {
 
@@ -39,7 +46,7 @@ const unzipFn = async (f: file) => {
             /**PATH : data*/
             const original_path_of_file: string = data.slice(offset, offset + length_of_path).toString('utf-8').replace(/\0/g, '');
             if (offset + length_of_path > data.length) break;
-            offset += length_of_path
+            offset += length_of_path;
 
             /**PATH : manipulation */
             let relativePath: string = relative(basepath, original_path_of_file);
@@ -57,16 +64,11 @@ const unzipFn = async (f: file) => {
 
             try {
                 if (statSync(original_path_of_file).isDirectory()) {
-                    if (!existsSync(finalPath)) {
-                        mkdirSync(resolve(finalPath), { recursive: true }
-                        )
-                    };
+                    ifNotExistMakeDir(finalPath)
                     continue;
 
                 } else {
-                    if (!existsSync(finalPath)) {
-                        mkdirSync(dirname(finalPath), { recursive: true })
-                    };
+                    ifNotExistMakeDir(finalPath)
                 };
 
                 writeFile(finalPath, the_data_of_file.toString(), (err) => {
@@ -75,11 +77,8 @@ const unzipFn = async (f: file) => {
             }
             catch (error) {
                 console.log(`Error occured while operating on files ; `, error);
-            } 
+            }
         };
-
-        
-
     });
 };
 export { unzipFn };
