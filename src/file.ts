@@ -2,7 +2,7 @@ import { normalize, resolve, basename } from "path";
 import fs, { existsSync, mkdirSync } from "fs";
 
 
-const ARCHIVED_FILE = "archive.archive";
+const ARCHIVED_FILE = "archived.archive";
 
 class file {
 
@@ -39,7 +39,6 @@ class file {
                     console.log(new Error(`Error occured on reading directory Info : ${err}`));
                     return;
                 };
-
                 files.forEach(each => this.allFilesPath.push({ name: each.name, parentPath: each.path }));
             }
         );
@@ -47,22 +46,17 @@ class file {
         return this.allFilesPath;
     };
 
-
     public zip_createInitialFolderSt(root: string): string {
-
         /////////////////////////////////////////////////////
         //TODO : MAKE USER BE ABLE TO GIVE THE NAME OF THE ZIPPED FOLDER
         /////////////////////////////////////////////////////
-        const folderRoot: string = resolve(root, `${basename(this.absPath)}_zipped`);
+        const folderRoot: string = resolve(root, `${basename(this.absPath)}(zipped)`);
         if (!existsSync(folderRoot)) mkdirSync(folderRoot, { recursive: true });
         fs.writeFile(resolve(folderRoot as string, ARCHIVED_FILE), "", (err) => {
             if (err) console.error(new Error(`Something went wrong while creating file. More Info : ${err}`));
         });
-
         return resolve(folderRoot as string, ARCHIVED_FILE);
     };
-
-
 };
 
 export { file }

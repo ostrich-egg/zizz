@@ -7,11 +7,10 @@ import { Buffer } from "buffer";
 import { relative, join } from "path";
 const readdirAsync = promisify(readdir);
 
-
 const ifNotExistMakeDir = (path: string): void => {
     if (!existsSync(path)) {
         mkdirSync(resolve(path), { recursive: true }
-        )
+        );
     };
 };
 
@@ -32,7 +31,7 @@ const unzipFn = async (f: file): Promise<void> => {
             ).toString().replace(/\0/g, '');
 
         const basepath: string = resolve(dirname(initial_path_of_file), "..");
-        const destRootPath: string = normalize(join(basepath, `${basename(dirname(initial_path_of_file))}_unzipped`));
+        const destRootPath: string = normalize(join(basepath, `${basename(dirname(initial_path_of_file))}(unzipped)`));
 
         let offset: number = 0;
         //While loop////
@@ -73,7 +72,7 @@ const unzipFn = async (f: file): Promise<void> => {
 
                 writeFile(finalPath, the_data_of_file.toString(), (err) => {
                     if (err) console.log("Error on writing file", err);
-                })
+                });
             }
             catch (error) {
                 console.log(`Error occured while operating on files ; `, error);

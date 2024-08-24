@@ -24,6 +24,7 @@ const argv: any = yargs(hideBin(process.argv))
             type: "string",
             demandOption: false
         }
+
     })
     .help()
     .alias("help", "h")

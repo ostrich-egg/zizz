@@ -8,11 +8,9 @@ const zip = async (f: file) => {
 
     f.getAbsPath();
     const allFilesPath: _allFilesPath[] = f.getAllFilesPath();
-
     const archivedFile: string = f.zip_createInitialFolderSt(
         resolve(allFilesPath[0].parentPath, "..")
     );
-
     const writeStream: fs.WriteStream = createWriteStream(archivedFile);
     const gzipStream = createGzip();
     gzipStream.pipe(writeStream);//pipe all the data from gzipStream to output stream as it is in writeStream
@@ -38,7 +36,6 @@ const zip = async (f: file) => {
         console.log(new Error(`Error occured while zipping.:: ${error}`));
     }
     finally {
-
         gzipStream.end();
         await new Promise((resolve, reject) => {
             writeStream.on('finish', resolve)
