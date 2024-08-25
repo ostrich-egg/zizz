@@ -9,4 +9,4 @@
 
 ### unzip
 - zizz --unzip "filepath"
--alias for unzip : u
+- alias for unzip : u

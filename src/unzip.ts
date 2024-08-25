@@ -43,7 +43,7 @@ const unzipFn = async (f: file): Promise<void> => {
             offset += 2;
 
             /**PATH : data*/
-            const original_path_of_file: string = data.slice(offset, offset + length_of_path).toString('utf-8').replace(/\0/g, '');
+            const original_path_of_file: string = data.slice(offset, offset + length_of_path).toString().replace(/\0/g, '');
             if (offset + length_of_path > data.length) break;
             offset += length_of_path;
 
@@ -57,7 +57,7 @@ const unzipFn = async (f: file): Promise<void> => {
             offset += 4;
 
             /**DATA : data */
-            const the_data_of_file: string = data.slice(offset, offset + length_of_data).toString('utf-8');
+            const the_data_of_file: string = data.slice(offset, offset + length_of_data).toString();
             if (offset + length_of_data > data.length) break;
             offset += length_of_data;
 
