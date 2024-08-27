@@ -5,6 +5,7 @@ import { dirname, resolve, normalize, basename } from "path";
 import { promisify } from "util";
 import { Buffer } from "buffer";
 import { relative, join } from "path";
+import { check } from "yargs";
 const readdirAsync = promisify(readdir);
 
 const ifNotExistMakeDir = (path: string): void => {
@@ -57,7 +58,7 @@ const unzipFn = async (f: file): Promise<void> => {
             offset += 4;
 
             /**DATA : data */
-            const the_data_of_file: string = data.slice(offset, offset + length_of_data).toString();
+            const the_data_of_file: Buffer = data.slice(offset, offset + length_of_data);
             if (offset + length_of_data > data.length) break;
             offset += length_of_data;
 
@@ -69,7 +70,17 @@ const unzipFn = async (f: file): Promise<void> => {
                     ifNotExistMakeDir(resolve(finalPath, ".."));
                 };
 
-                writeFile(finalPath, the_data_of_file.toString(), (err) => {
+                let signature = the_data_of_file.toString('hex');
+                let finalData;
+
+                if (signature.startsWith('ffd8') || signature.startsWith('89504e47') || signature.startsWith('47494638')) {
+
+                    finalData = the_data_of_file;
+                } else {
+                    finalData = the_data_of_file.toString();
+                }
+
+                writeFile(finalPath, finalData, (err) => {
                     if (err) console.log("Error on writing file", err);
                 });
             }
