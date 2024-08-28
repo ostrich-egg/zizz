@@ -12,10 +12,10 @@ npm install -g
 ```
 
 ### zip
-- zizz --zip "filepath"
+- zizz --zip "file/folder_path"
 - alias for zip : z
 
 
 ### unzip
-- zizz --unzip "filepath"
+- zizz --unzip "file/folder_path"
 - alias for unzip : u
